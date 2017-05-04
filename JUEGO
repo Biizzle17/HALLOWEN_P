@@ -1,0 +1,192 @@
+import beads.*;
+
+AudioContext   ac = new AudioContext();
+String audioFileName = "C:\\Users\\Alexandra Morales\\Desktop\\sally.mp3";
+String battle1="C:\\Users\\Alexandra Morales\\Desktop\\sally.mp3";
+
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+SamplePlayer player2 = new SamplePlayer(ac, SampleManager.sample(battle1));
+Gain g = new Gain(ac, 2, 0.2);
+
+PImage inicial, fondo, calavera, diablo, jack, play, pantalla,ganador1,ganador2,
+ooggie_booggie, sally, witch, seleccion, instrucciones;
+int GameState = 0, InicialSelected=0;
+String hp = "HP 100/100";
+String hp2 = "HP 100/100";
+int nHP = 100;
+int nHP2 = 100;
+int nHPbar = 100;
+int nHPbar2 = 100;
+int golpe = 0;
+int golpe2 = 0;
+void setup(){
+  g.addInput(player);
+  ac.out.addInput(g);
+  
+  inicial =loadImage("INICIO.jpg");
+  fondo =loadImage("FONDO.png");
+  calavera =loadImage("CALAVERA.png");
+  diablo =loadImage("DIABLO.png");
+  jack =loadImage("JACK.png");
+  sally =loadImage("SALLY.png");
+  witch =loadImage("WITCH.png");
+  ooggie_booggie =loadImage("OOGGIE BOOGGIE.png");
+  play = loadImage("PLAY.png");
+  pantalla =loadImage("PANTALLA.jpg");
+  seleccion =loadImage("seleccion.jpg");
+  instrucciones=loadImage("inss.jpg");
+  ganador1=loadImage("WIN_11.png");
+  ganador2=loadImage("WIN_21.png");
+  size(900,500);
+  frameRate(25);
+  fill(0);
+  textSize(40);
+  
+}
+
+void draw(){
+  if(golpe!=0){
+      golpe--;
+  }
+  if(golpe2!=0){
+     golpe2--; 
+  }
+  if(GameState==2 && golpe==0 && golpe2==0){  //Jugador 2
+    if(key=='l'){
+      nHP2= nHP2 - 20;
+        golpe2 = 25;
+        hp2 = "HP "+str(nHP2)+"/100";
+      
+    }
+     if(nHP2==0)GameState=3;
+  }
+  if(GameState==0){
+  imageMode(CORNER);
+  image(inicial, 0, 0, 900, 500);
+  image(play, 320, 300, 250, 150);
+  fill(255);
+  textSize(20);
+  text("Presiona PLAY para continuar", 50, 300);
+  }
+    else if(GameState==1){
+      imageMode(CORNER);
+      image(seleccion, 0,0, 900, 500);
+      fill(255);
+      textSize(20);
+      text("Selecciona tu personaje (Presiona 1, 2 o 3)", 200, 100);
+  }
+    else if(GameState==2){
+      imageMode(CORNER);
+      image(fondo, 0,0, 900, 500);
+        switch(InicialSelected){
+          case 1:
+        image(jack,100+20*sin((25-golpe)*4*PI/25),200+5*sin((25-golpe2)*8*PI/25), 200,200);
+        image(ooggie_booggie,500+20*sin((25-golpe2)*4*PI/25),50+5*sin((25-golpe)*8*PI/25), 200,200);
+        
+        break;
+        case 2:
+        image(sally,100+20*sin((25-golpe)*4*PI/25),200+5*sin((25-golpe2)*8*PI/25), 200,200);
+        image(witch,560+20*sin((25-golpe2)*4*PI/25),50+5*sin((25-golpe)*8*PI/25), 200,200);
+        break;
+        case 3:
+        image(diablo,100+20*sin((25-golpe)*4*PI/25),200+5*sin((25-golpe2)*8*PI/25), 200,200);
+        image(calavera,500+20*sin((25-golpe2)*4*PI/25),50+5*sin((25-golpe)*8*PI/25), 200,200);
+        break;
+      }
+    
+      fill(255);
+      text(hp, 180, 90);
+      text(hp2, 550, 450);
+      image(instrucciones, 0,400,500,200);
+      ac.start();
+    }else if(GameState==3 && golpe==0){
+     
+      if(nHPbar==0){
+        image(ganador1,450,250,450,100);
+        fill(255);
+        text("PRESIONA X PARA REGRESAR AL MENU", 500, 400);
+      }
+      else if(nHPbar2==0){
+        
+        image(ganador2,450,250,450,100);
+        fill(255);
+        text("PRESIONA X PARA REGRESAR AL MENU", 500, 400);
+      } 
+      ac.stop();
+      switch(InicialSelected){
+        case 1:
+        image(jack,100,200, 200,200);
+        image(ooggie_booggie,500,50, 200,200);
+        
+        break;
+        case 2:
+        image(sally,100,200, 200,200);
+        image(witch,560,50, 200,200);
+        break;
+        case 3:
+        image(diablo,100,200, 200,300);
+        image(calavera,500,50, 200,200);
+        break;
+    }
+    }
+  
+  
+  if(GameState>1){
+    stroke(0);
+    strokeWeight(3);
+    fill(0,0,255);
+    rect(90,30,300,20);
+    fill(255);
+    rect(390,30,-300+nHPbar*3,20);
+    strokeWeight(1);
+    stroke(0);
+    strokeWeight(3);
+    fill(0,0,255);
+    rect(560,460,300,20);
+    fill(255);
+    rect(860,460,-300+nHPbar2*3,20);
+    strokeWeight(1);
+  }
+  if(nHPbar!=nHP)nHPbar-=2;
+  if(nHPbar2!=nHP2)nHPbar2-=2;
+}
+  
+void mousePressed(){
+  if(GameState == 0){
+    GameState = 1;
+  }
+}
+void keyPressed(){
+  if(GameState==1){
+    if(key == '1'){
+      InicialSelected=1;
+      GameState=2;
+    }else if(key == '2'){
+      InicialSelected=2;
+      GameState=2;
+    }else if(key == '3'){
+      InicialSelected=3;
+      GameState=2;
+    }
+  }else if(GameState==2){
+    if(key == 's'){
+      if(golpe==0 && golpe2==0){
+        nHP= nHP - 20;
+        golpe = 25;
+        hp = "HP "+str(nHP)+"/100";
+      }
+      if(nHP==0)GameState=3;
+     
+    }
+  }else if(GameState==3){
+    nHPbar=100;
+    nHP=100;
+    nHPbar2=100;
+    nHP2=100;
+    hp = "HP 100/100";
+    hp2 = "HP 100/100";
+    if(key == 'x'){
+      GameState=1;
+    }
+  }
+}
